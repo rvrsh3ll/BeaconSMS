@@ -42,9 +42,9 @@ on heartbeat_10s {
 #               #
 #################
 
-menubar("BeaconSMS", "BeaconSMS", 2);
+menubar("SMS", "smsmenu", 2);
 
-popup smsify {
+popup smsmenu {
    item "Setup SMS Notification" {
       beaconSMS_dialog();
    }
