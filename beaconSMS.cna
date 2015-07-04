@@ -9,6 +9,7 @@ global('@old');
 #AuthUser=<username>@gmail.com
 #AuthPass=<password>
 #UseSTARTTLS=YES
+# For information on how to email an SMS to through your cellular provider http://www.emailtextmessages.com/
 
 
 on heartbeat_10s {
