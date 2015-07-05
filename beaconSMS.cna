@@ -1,4 +1,4 @@
-global('@old');
+global('@old $phonenumber');
 
 # This script requires ssmtp. Use apt-get install ssmtp
 # Setup ssmtp example http://tombuntu.com/index.php/2008/10/21/sending-email-from-your-system-with-ssmtp/
@@ -57,22 +57,31 @@ popup smsmenu {
 #               #
 #################
 on beacon_initial {
-   local('$key $value');
+   global('$phonenumber');
+   local('$process @data');
    println("I have a beacon: $1 from " . $2['internal']);
+   $process = exec("sh sendsms.sh");
+   @data = readAll($process);
+   closef($process);
    bsleep($1, 5, 10);
-   exec("ssmtp $phonenumber < beaconalert.txt");
 }
 
 sub beaconSMS_dialog {
+   global('$phonenumber');
+   local('$mailto $mailfrom $subject $data $file $handle $handle2 $smsscript');
    exec("rm beaconalert.txt");
+   exec("rm sendsms.sh");
    $phonenumber = prompt_text("SMS_Number:");
    $mailto = prompt_text("Mailto:");
    $mailfrom = prompt_text("Mailfrom:");
    $subject = prompt_text("Subject:");
    $data = "Alert: We have received a new Beacon!";
-   $file =("To: $mailto $+ \nFrom: $mailfrom $+ \nSubject: $subject $+ \n\n$data");
-
+   $file = ("To: $mailto $+ \nFrom: $mailfrom $+ \nSubject: $subject $+ \n\n$data");
    $handle = openf(">beaconalert.txt");
    writeb($handle, $file);
    closef($handle);
+   $smsscript = ("\#/bin/bash $+ \ncat beaconalert.txt | ssmtp $phonenumber");
+   $handle2 = openf(">sendsms.sh");
+   writeb($handle2, $smsscript);
+   closef($handle2);
 }
